@@ -549,7 +549,7 @@ Exclude '/dev/null' and errors from all buffers but the current buffer from `ERR
   "Project root folder.
 
 Determined by the presence of one of the following files:
-- wiring/wiring.alan for Alan customer projects
+- wiring/wiring.alan or wiring.alan for Alan customer projects
 - build.alan for Alan system type
 - versions.json for Alan customer projects (legacy)
 - project.json for Alan system type (legacy)
@@ -562,6 +562,7 @@ project.json over versions.json."
 		 (expand-file-name
 		  (or (locate-dominating-file default-directory "build.alan")
 			  (locate-dominating-file default-directory "wiring/wiring.alan")
+			  (locate-dominating-file default-directory "wiring.alan")
 			  (let ((project-files ["versions.json" "project.json"]))
 				(seq-find
 				 #'stringp
@@ -579,7 +580,12 @@ project.json over versions.json."
   (projectile-register-project-type
    'alan-application
    '( "wiring/wiring.alan")
-   :project-file "wiring/wiring.alan"))
+   :project-file "wiring/wiring.alan")
+
+  (projectile-register-project-type
+   'alan-application
+   '( "wiring.alan")
+   :project-file "wiring.alan"))
 
 (defun alan-file-executable (file)
   "Check if FILE is executable and return FILE."
@@ -659,6 +665,8 @@ E.g. /tmp/alan-lsp-log"
 			 (fabric ".alan/devenv/platform/project-build-environment/tools/fabric"))
 	(cond ((and (file-exists-p (concat project-root "build.alan"))
 				(alan-file-executable (concat (locate-dominating-file project-root alan) alan))))
+		  ((and (file-exists-p (concat project-root "wiring.alan"))
+				(alan-file-executable (concat (locate-dominating-file project-root fabric) fabric))))
 		  ((and (file-exists-p (concat project-root "wiring/wiring.alan"))
 				(alan-file-executable (concat (locate-dominating-file project-root fabric) fabric)))))))
 
